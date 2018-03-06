@@ -4,6 +4,7 @@ import com.example.demo.config.ExcelConfigProps;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,11 @@ public class UserController {
 
     //文件前缀
     private static final String FILEPREFIX = "user";
+
+    @RequestMapping(value = "/query",method = RequestMethod.GET)
+    public String query(){
+        return "Hello World";
+    }
 
     @RequestMapping(value = "/upload")
     public void upload(MultipartFile multipartFile){

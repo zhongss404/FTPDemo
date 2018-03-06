@@ -1,9 +1,10 @@
-
 server:
-  address: /api
+  servlet:
+    context-path: /api
 
 excel:
   uploadLocation: src/main/resources/upload
   downloadLocation: src/main/resources/download
   templateLocation: src/main/resources/modules
   reportLocation: src/main/resources/reports
+
