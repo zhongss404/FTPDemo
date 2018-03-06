@@ -2,8 +2,6 @@
 <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration>
-    <!-- 引入配置文件 -->
-    <properties resource="init.properties"/>
 
     <!-- 指定数据连接驱动jar地址 -->
     <classPathEntry location="src/main/resources/lib/mysql-connector-java-5.1.40-bin.jar"/>
@@ -16,9 +14,9 @@
         </commentGenerator>
 
         <!-- jdbc连接 -->
-        <jdbcConnection driverClass="${jdbc_driver}"
-                        connectionURL="${jdbc_url}" userId="${jdbc_user}"
-                        password="${jdbc_password}"/>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.91.128:3306/ftpdemo" userId="root"
+                        password="123456"/>
 
         <!-- 类型转换 -->
         <javaTypeResolver>
@@ -27,7 +25,7 @@
         </javaTypeResolver>
 
         <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="com.zto.cms.domain"
+        <javaModelGenerator targetPackage="com.example.demo.dao.domain"
                             targetProject="src/main/java">
             <!-- 是否在当前路径下新加一层schema,eg：fase路径com.oop.eksp.user.model， true:com.oop.eksp.user.model.[schemaName] -->
             <property name="enableSubPackages" value="false"/>
@@ -36,26 +34,22 @@
         </javaModelGenerator>
 
         <!-- 生成mapxml文件 -->
-        <sqlMapGenerator targetPackage="com.zto.cms.mapper"
-                         targetProject="src/main/java">
+        <sqlMapGenerator targetPackage="com.example.demo.dao.mapper"
+                         targetProject="src/main/resources">
             <!-- 是否在当前路径下新加一层schema,eg：fase路径com.oop.eksp.user.model， true:com.oop.eksp.user.model.[schemaName] -->
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
 
-        <!-- 生成mapxml对应client，也就是接口dao -->
-        <javaClientGenerator targetPackage="com.zto.cms.mapper"
+        <!-- 生成mapxml对应接口 -->
+        <javaClientGenerator targetPackage="com.example.demo.dao.mapper"
                              targetProject="src/main/java" type="XMLMAPPER">
             <!-- 是否在当前路径下新加一层schema,eg：fase路径com.oop.eksp.user.model， true:com.oop.eksp.user.model.[schemaName] -->
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
 
-
-        <!--<table tableName="serverinfo" schema="serverinfo"-->
-               <!--domainObjectName="ServerInfo" enableCountByExample="true"></table>-->
-
-        <table tableName="server" schema="ServerInfo"
-               domainObjectName="ServerInfo" enableCountByExample="true"
+        <table tableName="xxxx" schema="User"
+               domainObjectName="User" enableCountByExample="true"
                enableDeleteByExample="true" enableSelectByExample="true"
                enableUpdateByExample="true">
         </table>

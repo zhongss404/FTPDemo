@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.JsonResult;
 import com.example.demo.config.ExcelConfigProps;
+import com.example.demo.dao.dto.UserDto;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +31,8 @@ public class UserController {
     private static final String FILEPREFIX = "user";
 
     @RequestMapping(value = "/query",method = RequestMethod.GET)
-    public String query(){
-        return "Hello World";
+    public JsonResult query(UserDto userDto){
+        return userService.query(userDto);
     }
 
     @RequestMapping(value = "/upload")
@@ -42,5 +44,10 @@ public class UserController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "/import")
+    public JsonResult importUser() throws Exception{
+        return userService.importUser(excelConfigBean.getUploadLocation() + PATHSUFFIX,LINES);
     }
 }

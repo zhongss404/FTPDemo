@@ -1,4 +1,4 @@
-package com.example.demo.common;
+package com.example.demo.utils;
 
 import com.example.demo.config.ExcelConfigProps;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -206,7 +206,7 @@ public class ExcelUtils {
             T object = clazz.newInstance();
             Method method;
             for(int j=0;j<methods.length;j++){
-                if(methods[j].contains("Date")){
+                if(methods[j].contains("date") || methods[j].contains("Date")){
                     method = clazz.getMethod("set" + methods[j],Date.class);
                     method.invoke(object,values[j] != null ? new SimpleDateFormat(getPattern(values[j])).parse(values[j]) :null);
                 }else{

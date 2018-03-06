@@ -1,14 +1,24 @@
 package com.example.demo.service;
 
-import com.example.demo.common.ExcelUtils;
+import com.example.demo.common.JsonResult;
+import com.example.demo.dao.domain.User;
+import com.example.demo.dao.domain.UserExample;
+import com.example.demo.dao.dto.UserDto;
+import com.example.demo.dao.mapper.UserMapper;
+import com.example.demo.dao.mapper.UserMapperExt;
+import com.example.demo.utils.ExcelUtils;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by dashuai on 2018/3/6.
@@ -17,7 +27,21 @@ import java.util.List;
 public class UserService {
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private UserMapperExt userMapperExt;
+
+    @Autowired
     private ExcelUtils excelUtils;
+
+    public JsonResult query(UserDto userDto){
+        JsonResult result = new JsonResult();
+        //分页不可用
+        PageInfo data = PageHelper.startPage(userDto.getPage(),userDto.getPageSize()).doSelectPageInfo(()->userMapperExt.selectByCondition(userDto));
+        result.setData(userMapperExt.selectByCondition(userDto));
+        return result;
+    }
 
     public void upload(String catalog,String filePrefix,Integer lines,MultipartFile multipartFile) throws Exception {
         Workbook workbook = excelUtils.getWorkbook(multipartFile);
@@ -25,5 +49,72 @@ public class UserService {
         excelUtils.generateExcel("upload",filePrefix,catalog,data);    //生成Excel
         //当上传目录内容超过5个时，删除10分钟外的内容
         excelUtils.deleteOldFiles(5,new File(catalog));
+    }
+
+    public JsonResult importUser(String catalog,Integer lines) throws Exception{
+        File file = excelUtils.getRecentlyFile(catalog);
+        if(file == null){
+            return new JsonResult("清除上传列表中的文件后,请重新上传文件!");
+        }
+        String[] methodLists = excelUtils.getClassMethods("com.example.demo.dao.domain","User");
+        List<String[]> data = excelUtils.parseExcel(lines,new HSSFWorkbook(new FileInputStream(file)));
+        List<User> users = excelUtils.parse2Object(User.class,methodLists,data);
+        return batchHandle(users);
+    }
+
+    private JsonResult batchHandle(List<User> users) throws Exception{
+        StringBuffer sbuf = new StringBuffer();
+        for(int i=0;i<users.size();i++){
+            User user = users.get(i);
+            if(user != null){
+                String checkResult = checkProperties(user);
+                if(checkResult != null){
+                    sbuf.append("\r\nExcel文件第 " + (i+2) + " 行数据导入失败! 失败原因: " + checkResult)
+                            .append("\r\n");
+                    continue;
+                }
+                try{
+                    List<User> validateResult = recordIsUnique(user.getCode());
+                    if(validateResult.size() ==0){  //不存在，新增
+                        user.setId(UUID.randomUUID().toString().replaceAll("-","").trim());
+                        userMapper.insertSelective(user);
+                    }else{                   //存在，更新
+                        user.setId(validateResult.get(0).getId());
+                        userMapper.updateByExampleSelective(user,new UserExample());
+                    }
+                }catch(Exception e){
+                    sbuf.append("\r\nExcel文件第 " + (i+2) + " 行数据导入时出现异常! 异常信息:\r\n").append(e.toString()).append("\r\n");
+                    continue;
+                }
+            }
+        }
+        if(sbuf.toString().length() > 0){
+            excelUtils.generateImportReport(sbuf.toString());
+            return new JsonResult("hasReport");
+        }
+        return new JsonResult();
+    }
+
+
+    private String checkProperties(User user){
+        if(user == null){
+            return "请求错误";
+        }
+        if(user.getCode() == null){
+            return "员工编号为空";
+        }
+        if(user.getUsername() == null){
+            return "用户名为空";
+        }
+        if(user.getRealname() == null){
+            return "姓名为空";
+        }
+        return null;
+    }
+
+    private List<User> recordIsUnique(String code){
+        UserExample example = new UserExample();
+        example.createCriteria().andCodeEqualTo(code);
+        return userMapper.selectByExample(example);
     }
 }

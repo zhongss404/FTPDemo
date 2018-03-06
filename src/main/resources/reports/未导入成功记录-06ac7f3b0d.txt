@@ -1,0 +1,11 @@
+
+Excel文件第 2 行数据导入失败! 失败原因: 用户名为空
+
+Excel文件第 3 行数据导入时出现异常! 异常信息:
+org.springframework.dao.DuplicateKeyException: 
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry 'bc3cc96c9c2a4222a9315926d06680a0' for key 'PRIMARY'
+### The error may involve com.example.demo.dao.mapper.UserMapper.updateByExampleSelective-Inline
+### The error occurred while setting parameters
+### SQL: update user      SET id = ?,                       code = ?,                       username = ?,                       realname = ?,                       age = ?,                       empdate = ?,                       address = ?
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry 'bc3cc96c9c2a4222a9315926d06680a0' for key 'PRIMARY'
+; ]; Duplicate entry 'bc3cc96c9c2a4222a9315926d06680a0' for key 'PRIMARY'; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry 'bc3cc96c9c2a4222a9315926d06680a0' for key 'PRIMARY'
