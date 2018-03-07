@@ -22,3 +22,11 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+.txt
+.xls
+
+download/
+modules/
+reports/
+upload/

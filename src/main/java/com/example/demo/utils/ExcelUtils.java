@@ -28,6 +28,7 @@ import java.util.UUID;
 
 /**
  * Created by dashuai on 2017/9/29.
+ *
  */
 @Component
 public class ExcelUtils {
@@ -157,7 +158,7 @@ public class ExcelUtils {
     }
 
     /**
-     * 处理toString方法获得数据
+     * 处理toString方法来获得数据
      * @param objectToStringResult
      * @return
      */
@@ -189,6 +190,16 @@ public class ExcelUtils {
         return var2;
     }
 
+    /**
+     * 根据对象的toString获取对象的方法
+     * -- 为什么不直接使用反射获取对象的方法？
+     * -- 虽然反射能获取对象的方法，但是在实际运用中不一定使用所有的方法，需要我们判断，过程繁琐
+     * -- 而使用toString这种方式，我们可以简单的添加/修改需要的方法
+     * @param packageName
+     * @param className
+     * @return
+     * @throws Exception
+     */
     public String[] getClassMethods(String packageName,String className) throws Exception{
         String toStringResult = Class.forName(packageName + "." + className).newInstance().toString();
         String[] var1 = toStringResult.replaceAll(className + "\\{", "").replaceAll("\\}", "").trim().split(",");
@@ -199,6 +210,17 @@ public class ExcelUtils {
         return methodName;
     }
 
+    /**
+     * 利用反射将String[]类型的分散数据封装为对象
+     *
+     * 注意：待封装的对象的toString方法一定要去掉与id有关的一切
+     * @param clazz
+     * @param methods
+     * @param data
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
     public <T> List<T> parse2Object(Class<T> clazz, String[] methods, List<String[]> data) throws Exception{
         List<T> result = new ArrayList<>();
         for(int i=0;i<data.size();i++){
@@ -244,7 +266,13 @@ public class ExcelUtils {
         file.delete();
     }
 
-    public void generateImportReport(String content) throws Exception{
+    /**
+     * 导入
+     * @param content
+     * @return
+     * @throws Exception
+     */
+    public String generateImportReport(String content) throws Exception{
         File filePath = new File(excelConfigProps.getReportLocation());
         if(!filePath.exists()){
             filePath.mkdirs();
@@ -254,6 +282,7 @@ public class ExcelUtils {
         BufferedWriter ow = new BufferedWriter(new FileWriter(file));
         ow.write(content);
         ow.close();
+        return uuid;
     }
 
     /**

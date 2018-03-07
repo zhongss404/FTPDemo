@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created by dashuai on 2018/3/6.
  */
@@ -49,5 +52,14 @@ public class UserController {
     @RequestMapping(value = "/import")
     public JsonResult importUser() throws Exception{
         return userService.importUser(excelConfigBean.getUploadLocation() + PATHSUFFIX,LINES);
+    }
+
+    @RequestMapping(value = "/export")
+    public void exportUser(HttpServletRequest request, HttpServletResponse response){
+        try {
+            userService.exportUser(excelConfigBean.getDownloadLocation() + PATHSUFFIX,FILEPREFIX,request,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
